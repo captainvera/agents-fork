@@ -1,0 +1,23 @@
+.changeset/codemode-worker-safe-discovery.md
+  s_7bd5fed9c4436f::t_42c5d51685fc5f 1-5
+packages/codemode/src/mcp.ts
+  s_7bd5fed9c4436f::t_d7b82b9c1ac8af 134-137
+packages/codemode/src/tests/mcp.test.ts
+  s_7bd5fed9c4436f::t_69d0e10ec333d4 1,4,106-135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "3d2d8ea19ae46d8560e6cb7ab15b89e799895439",
+  "prompts": {},
+  "sessions": {
+    "s_7bd5fed9c4436f": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "01a0b3e5-5091-7579-bc04-4651888fdbef",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "mvera <mvera@cloudflare.com>"
+    }
+  }
+}
