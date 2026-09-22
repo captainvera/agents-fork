@@ -1,6 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { env } from "cloudflare:workers";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { CfWorkerJsonSchemaValidator } from "@modelcontextprotocol/sdk/validation/cfworker";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { ElicitRequestSchema } from "@modelcontextprotocol/sdk/types.js";
@@ -102,6 +103,36 @@ function buildReferencedOpenApiSpec({
 }
 
 describe("codeMcpServer", () => {
+  it("should use the Workers-safe validator when discovering output schemas", async () => {
+    const upstream = new McpServer(
+      { name: "structured-tools", version: "1.0.0" },
+      { jsonSchemaValidator: new CfWorkerJsonSchemaValidator() }
+    );
+    upstream.registerTool(
+      "structured",
+      {
+        inputSchema: {},
+        outputSchema: { value: z.string() }
+      },
+      async () => ({
+        structuredContent: { value: "ok" },
+        content: [{ type: "text", text: JSON.stringify({ value: "ok" }) }]
+      })
+    );
+    const getValidator = vi.spyOn(
+      CfWorkerJsonSchemaValidator.prototype,
+      "getValidator"
+    );
+    const executor = new DynamicWorkerExecutor({ loader: env.LOADER });
+
+    try {
+      await codeMcpServer({ server: upstream, executor });
+      expect(getValidator).toHaveBeenCalledOnce();
+    } finally {
+      getValidator.mockRestore();
+    }
+  });
+
   it("should expose a single code tool", async () => {
     const upstream = createUpstreamServer();
     const executor = new DynamicWorkerExecutor({ loader: env.LOADER });
